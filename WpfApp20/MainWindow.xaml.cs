@@ -24,32 +24,34 @@ namespace WpfApp20
     {
         Students std = new Students();
         Teachers tch = new Teachers();
+        SqlDataReader read;
+        DataTable table;
         public MainWindow()
         {
             InitializeComponent();
             UsersBox.Items.Add("Students");
             UsersBox.Items.Add("Teachers");
         }
-        public static void Connect(DataGrid data, string info)
+        public  void Connect(DataGrid data, string info)
         {
             string con = @"Data Source=DESKTOP-VUKJ5T5\TURAL;Initial Catalog=Library;Integrated Security=True; ";
             using (SqlConnection connection = new SqlConnection(con))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand("Select * from " + info, connection);
-                SqlDataReader read = cmd.ExecuteReader();
-                DataTable table = Data(read);
+                read = cmd.ExecuteReader();
+                table = Data(read);
                 ShowData(table, data);
             }
         }
-        public static DataTable Data(SqlDataReader reader)
+        public DataTable Data(SqlDataReader reader)
         {
             DataTable table = new DataTable("Info");
             table.Load(reader);
             return table;
         }
 
-        public static void ShowData(DataTable data, DataGrid grid)
+        public void ShowData(DataTable data, DataGrid grid)
         {
             grid.ItemsSource = data.DefaultView;
         }
@@ -59,6 +61,7 @@ namespace WpfApp20
         private void UsersBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string str = UsersBox.SelectedItem as string;
+            
             Connect(data, str);
 
         }
@@ -102,14 +105,15 @@ namespace WpfApp20
             {
                 int ID = (int)rowView.Row.ItemArray[0];
                 string con = @"Data Source = DESKTOP-VUKJ5T5\TURAL;Initial Catalog= Library; Integrated Security = true; ";
-
                 using (SqlConnection connection = new SqlConnection(con))
                 {
                     connection.Open();
                     SqlCommand cmd = new SqlCommand("Delete  From " + (string)UsersBox.SelectedItem +
                   " where id= " + ID, connection);
                     cmd.ExecuteNonQuery();
-                    data.Items.Refresh();
+                    string str = UsersBox.SelectedItem as string;
+                    Connect(data, str);
+                  
                 }
                
 
